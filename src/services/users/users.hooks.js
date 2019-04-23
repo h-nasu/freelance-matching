@@ -9,6 +9,13 @@ const {
   hashPassword, protect
 } = require('@feathersjs/authentication-local').hooks;
 
+const facebookLogin = () => async context => {
+  if (context.params.oauth && context.params.oauth.provider == 'facebook') {
+    context.data.email = context.data.facebook.profile.emails[0].value
+  }
+  return context
+}
+
 module.exports = {
   before: {
     all: [],
@@ -16,10 +23,12 @@ module.exports = {
     get: [ authenticate('jwt') ],
     create: [
       hashPassword(),
-      verifyHooks.addVerification()
+      verifyHooks.addVerification(),
+      facebookLogin(),
     ],
     update: [
-      commonHooks.disallow('external')
+      commonHooks.disallow('external'),
+      facebookLogin(),
     ],
     patch: [
       commonHooks.iff(
@@ -53,6 +62,9 @@ module.exports = {
     get: [],
     create: [
       context => {
+        if (context.params.oauth && context.params.oauth.provider == 'facebook') {
+          return context
+        }
         accountService(context.app).notifier('resendVerifySignup', context.result)
       },
       verifyHooks.removeVerification()
