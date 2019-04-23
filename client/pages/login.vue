@@ -19,6 +19,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <n-link to="forgetPassword" class="mr-1">Forget Password</n-link>
+        <v-btn @click="fbLogin" color="info">Login with Facebook</v-btn>
         <v-btn to="/register" color="secondary">Sign Up</v-btn>
         <v-btn @click="onSubmit(email, password)" color="primary">Login</v-btn>
       </v-card-actions>
@@ -44,7 +45,6 @@ export default {
       this.error = undefined
       this.clearAuthenticateError()
     },
-
     onSubmit (email, password) {
       this.authenticate({strategy: 'local', email, password})
         .then(() => {
@@ -60,6 +60,9 @@ export default {
             : 'An error prevented login.'
           this.error = error
         })
+    },
+    fbLogin () {
+      window.location = "/auth/facebook"
     },
   }
 }
